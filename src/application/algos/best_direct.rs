@@ -1,4 +1,5 @@
 use rayon::iter::ParallelIterator;
+use rust_decimal::Decimal;
 
 use crate::adapter::graph::Graph;
 use crate::domain::types::{ExecutionParams, Route, Side, SwapStep, Token};
@@ -21,7 +22,7 @@ pub fn best_direct(
     graph: &Graph,
     from: &Token,
     to: &Token,
-    amount_in: f64,
+    amount_in: Decimal,
     _params: ExecutionParams,
 ) -> Option<Route> {
     graph
@@ -37,5 +38,5 @@ pub fn best_direct(
                 output_amount: out,
             })
         })
-        .max_by(|a, b| a.output_amount.total_cmp(&b.output_amount))
+        .max_by(|a, b| a.output_amount.cmp(&b.output_amount))
 }

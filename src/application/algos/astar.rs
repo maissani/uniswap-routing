@@ -1,4 +1,5 @@
 use rayon::iter::ParallelIterator;
+use rust_decimal::{Decimal, dec};
 
 use crate::adapter::graph::Graph;
 use crate::domain::types::{ExecutionParams, Route, Side, SwapStep, Token};
@@ -10,8 +11,8 @@ use std::sync::Arc;
 struct AStarState {
     token: Token,
     route: Vec<SwapStep>,
-    cumulative_amount: f64,
-    estimated_cost: f64,
+    cumulative_amount: Decimal,
+    estimated_cost: Decimal,
     visited_tokens: HashSet<Token>,
 }
 
@@ -29,7 +30,7 @@ impl PartialOrd for AStarState {
 
 impl Ord for AStarState {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.estimated_cost.total_cmp(&self.estimated_cost)
+        other.estimated_cost.cmp(&self.estimated_cost)
     }
 }
 
@@ -50,7 +51,7 @@ pub fn astar(
     graph: &Graph,
     from: &Token,
     to: &Token,
-    amount_in: f64,
+    amount_in: Decimal,
     params: ExecutionParams,
 ) -> Option<Route> {
     let mut heap = BinaryHeap::new();
@@ -61,11 +62,11 @@ pub fn astar(
         token: from.clone(),
         route: vec![],
         cumulative_amount: amount_in,
-        estimated_cost: 0.0,
+        estimated_cost: dec!(0),
         visited_tokens: initial_seen,
     });
 
-    let mut visited: HashMap<Token, f64> = HashMap::new();
+    let mut visited: HashMap<Token, Decimal> = HashMap::new();
 
     while let Some(AStarState {
         token,
@@ -109,7 +110,7 @@ pub fn astar(
             let mut new_visited = visited_tokens.clone();
             new_visited.insert(next_token.clone());
 
-            let liquidity_heuristic = 1.0 / (pool.reserve0 + pool.reserve1).max(1.0);
+            let liquidity_heuristic = dec!(1) / (pool.reserve0 + pool.reserve1).max(dec!(1));
             let estimated_cost = -out + liquidity_heuristic;
 
             heap.push(AStarState {

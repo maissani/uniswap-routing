@@ -1,4 +1,5 @@
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use rust_decimal::dec;
 
 use crate::adapter::graph::Graph;
 use crate::domain::{self, types::*};
@@ -10,79 +11,79 @@ fn get_reference_pools() -> Vec<Arc<Pool>> {
         Pool {
             token0: Token("ETH"),
             token1: Token("USDC"),
-            reserve0: 2000.0,
-            reserve1: 2_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(2000),
+            reserve1: dec!(2000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("USDC"),
-            reserve0: 1000.0,
-            reserve1: 1_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000),
+            reserve1: dec!(1000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("DAI"),
-            reserve0: 1000.0,
-            reserve1: 900_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000),
+            reserve1: dec!(900000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("DAI"),
-            reserve0: 3000.0,
-            reserve1: 2_800_000.0,
-            fee_bps: 30,
+            reserve0: dec!(3000),
+            reserve1: dec!(2800000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("DAI"),
-            reserve0: 3000.0,
-            reserve1: 3_100_000.0,
-            fee_bps: 30,
+            reserve0: dec!(3000),
+            reserve1: dec!(3100000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("DAI"),
             token1: Token("USDC"),
-            reserve0: 1_000_000.0,
-            reserve1: 1_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000000),
+            reserve1: dec!(1000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("DAI"),
             token1: Token("USDC"),
-            reserve0: 2_000_000.0,
-            reserve1: 2_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(2000000),
+            reserve1: dec!(2000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("DAI"),
             token1: Token("USDT"),
-            reserve0: 1_000_000.0,
-            reserve1: 900_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000000),
+            reserve1: dec!(900000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("DAI"),
             token1: Token("USDT"),
-            reserve0: 900_000.0,
-            reserve1: 1_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(900000),
+            reserve1: dec!(1000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("USDT"),
-            reserve0: 2000.0,
-            reserve1: 2_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(2000),
+            reserve1: dec!(2000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("USDT"),
-            reserve0: 10_000.0,
-            reserve1: 10_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(10000),
+            reserve1: dec!(10000000),
+            fee_bps: dec!(30),
         },
     ]
     .into_par_iter()
@@ -92,7 +93,7 @@ fn get_reference_pools() -> Vec<Arc<Pool>> {
 
 fn validate_route(route: (RoutingAlgo, Route), from: &'static str, to: &'static str) {
     let (_algo, route) = route;
-    assert!(route.output_amount > 0.0, "Output amount should be > 0");
+    assert!(route.output_amount > dec!(0), "Output amount should be > 0");
     assert_eq!(
         route.steps.first().unwrap().from,
         domain::types::Token(from)
@@ -110,8 +111,8 @@ fn test_full_eth_usdc_routing_scenario() {
     let graph = Graph::new(&pools);
     let router = DefaultRouter;
 
-    let eth_in = 10.0;
-    let usdc_in = 10_000.0;
+    let eth_in = dec!(10);
+    let usdc_in = dec!(10000);
 
     let route1 = router.compute_route(
         Side::Buy,
@@ -120,7 +121,9 @@ fn test_full_eth_usdc_routing_scenario() {
         &Token("USDC"),
         eth_in,
         ExecutionParams {
-            slippage: Slippage { tolerance_bps: 100 },
+            slippage: Slippage {
+                tolerance_bps: dec!(100),
+            },
             algo: RoutingAlgo::Auto,
             max_hops: 4,
         },
@@ -135,7 +138,9 @@ fn test_full_eth_usdc_routing_scenario() {
         &Token("ETH"),
         usdc_in,
         ExecutionParams {
-            slippage: Slippage { tolerance_bps: 100 },
+            slippage: Slippage {
+                tolerance_bps: dec!(100),
+            },
             algo: RoutingAlgo::Auto,
             max_hops: 4,
         },

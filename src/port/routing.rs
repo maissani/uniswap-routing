@@ -1,3 +1,5 @@
+use rust_decimal::Decimal;
+
 use crate::adapter::graph::Graph;
 use crate::application::route_engine;
 use crate::domain::types::{ExecutionParams, Route, RoutingAlgo, Side, Token};
@@ -9,7 +11,7 @@ pub trait RoutingStrategy {
         graph: &Graph,
         from: &Token,
         to: &Token,
-        amount_in: f64,
+        amount_in: Decimal,
         params: ExecutionParams,
     ) -> Option<(RoutingAlgo, Route)>;
 }
@@ -23,7 +25,7 @@ impl RoutingStrategy for DefaultRouter {
         graph: &Graph,
         from: &Token,
         to: &Token,
-        amount_in: f64,
+        amount_in: Decimal,
         params: ExecutionParams,
     ) -> Option<(RoutingAlgo, Route)> {
         route_engine::execute(side, graph, from, to, amount_in, params)

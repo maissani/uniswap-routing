@@ -1,3 +1,4 @@
+use rust_decimal::dec;
 use std::sync::Arc;
 use uniswap_routing::adapter::graph::Graph;
 use uniswap_routing::application::algos::best_direct::best_direct;
@@ -10,79 +11,79 @@ fn get_demo_pools() -> Vec<Arc<Pool>> {
         Pool {
             token0: Token("ETH"),
             token1: Token("USDC"),
-            reserve0: 2000.0,
-            reserve1: 2_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(2000),
+            reserve1: dec!(2000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("USDC"),
-            reserve0: 1000.0,
-            reserve1: 1_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000),
+            reserve1: dec!(1000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("DAI"),
-            reserve0: 1000.0,
-            reserve1: 900_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000),
+            reserve1: dec!(900000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("DAI"),
-            reserve0: 3000.0,
-            reserve1: 2_800_000.0,
-            fee_bps: 30,
+            reserve0: dec!(3000),
+            reserve1: dec!(2800000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("DAI"),
-            reserve0: 3000.0,
-            reserve1: 3_100_000.0,
-            fee_bps: 30,
+            reserve0: dec!(3000),
+            reserve1: dec!(3100000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("DAI"),
             token1: Token("USDC"),
-            reserve0: 1_000_000.0,
-            reserve1: 1_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000000),
+            reserve1: dec!(1000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("DAI"),
             token1: Token("USDC"),
-            reserve0: 2_000_000.0,
-            reserve1: 2_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(2000000),
+            reserve1: dec!(2000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("DAI"),
             token1: Token("USDT"),
-            reserve0: 1_000_000.0,
-            reserve1: 900_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000000),
+            reserve1: dec!(900000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("DAI"),
             token1: Token("USDT"),
-            reserve0: 900_000.0,
-            reserve1: 1_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(900000),
+            reserve1: dec!(1000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("USDT"),
-            reserve0: 2000.0,
-            reserve1: 2_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(2000),
+            reserve1: dec!(2000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("USDT"),
-            reserve0: 10_000.0,
-            reserve1: 10_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(10000),
+            reserve1: dec!(10000000),
+            fee_bps: dec!(30),
         },
     ]
     .into_iter()
@@ -96,24 +97,24 @@ fn main() {
     let router = DefaultRouter;
 
     let scenarios = vec![
-        (Side::Buy, "ETH", "USDC", 10.0, 100), // Scenario that is expecter on the solve1
-        (Side::Buy, "USDC", "ETH", 10_000.0, 100), // Scenario that is expected on the solve2
-        (Side::Buy, "USDT", "ETH", 20_000.0, 30),
-        (Side::Buy, "ETH", "USDT", 5.0, 50),
-        (Side::Buy, "ETH", "USDC", 10.0, 100),
-        (Side::Buy, "USDC", "ETH", 10_000.0, 100),
-        (Side::Buy, "ETH", "DAI", 2.5, 150),
-        (Side::Buy, "DAI", "ETH", 2.5, 150),
-        (Side::Buy, "USDC", "DAI", 10_000.0, 100),
-        (Side::Buy, "DAI", "USDC", 10_000.0, 100),
-        (Side::Buy, "USDC", "USDT", 10_000.0, 100),
-        (Side::Buy, "USDT", "USDC", 10_000.0, 100),
-        (Side::Buy, "DAI", "USDT", 10_000.0, 100),
-        (Side::Buy, "USDT", "DAI", 10_000.0, 100),
-        (Side::Buy, "USDC", "ETH", 10_000.0, 100),
-        (Side::Buy, "ETH", "USDC", 10_000.0, 100),
-        (Side::Buy, "USDT", "ETH", 10_000.0, 100),
-        (Side::Buy, "ETH", "USDT", 10_000.0, 100),
+        (Side::Buy, "ETH", "USDC", dec!(10), dec!(100)), // Scenario that is expecter on the solve1
+        (Side::Buy, "USDC", "ETH", dec!(10000), dec!(100)), // Scenario that is expected on the solve2
+        (Side::Buy, "USDT", "ETH", dec!(20000), dec!(30)),
+        (Side::Buy, "ETH", "USDT", dec!(5), dec!(50)),
+        (Side::Buy, "ETH", "USDC", dec!(10), dec!(100)),
+        (Side::Buy, "USDC", "ETH", dec!(10000), dec!(100)),
+        (Side::Buy, "ETH", "DAI", dec!(2.5), dec!(150)),
+        (Side::Buy, "DAI", "ETH", dec!(2.5), dec!(150)),
+        (Side::Buy, "USDC", "DAI", dec!(10000), dec!(100)),
+        (Side::Buy, "DAI", "USDC", dec!(10000), dec!(100)),
+        (Side::Buy, "USDC", "USDT", dec!(10000), dec!(100)),
+        (Side::Buy, "USDT", "USDC", dec!(10000), dec!(100)),
+        (Side::Buy, "DAI", "USDT", dec!(10000), dec!(100)),
+        (Side::Buy, "USDT", "DAI", dec!(10000), dec!(100)),
+        (Side::Buy, "USDC", "ETH", dec!(10000), dec!(100)),
+        (Side::Buy, "ETH", "USDC", dec!(10000), dec!(100)),
+        (Side::Buy, "USDT", "ETH", dec!(10000), dec!(100)),
+        (Side::Buy, "ETH", "USDT", dec!(10000), dec!(100)),
     ];
 
     for (side, from, to, input, slippage_bps) in scenarios {
@@ -159,10 +160,10 @@ fn main() {
             ) {
                 println!("→ Best direct: {:.6}", best_direct.output_amount);
                 println!("→ Best Route Output: {:.6}", r.output_amount);
-                if best_direct.output_amount > 0.0 {
+                if best_direct.output_amount > dec!(0) {
                     let improvement = ((r.output_amount - best_direct.output_amount)
                         / best_direct.output_amount)
-                        * 100.0;
+                        * dec!(100);
                     println!("→ Improvement over best direct swap: {:.2}%", improvement);
                 }
                 println!("→ No direct swap available");

@@ -1,4 +1,5 @@
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use rust_decimal::dec;
 
 use crate::adapter::graph::Graph;
 use crate::domain::types::*;
@@ -10,30 +11,30 @@ fn setup_graph() -> (Graph, Vec<Arc<Pool>>) {
         Pool {
             token0: Token("ETH"),
             token1: Token("USDC"),
-            reserve0: 1000.0,
-            reserve1: 1_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000),
+            reserve1: dec!(1000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("USDC"),
             token1: Token("DAI"),
-            reserve0: 1_000_000.0,
-            reserve1: 1_000_000.0,
-            fee_bps: 30,
+            reserve0: dec!(1000000),
+            reserve1: dec!(1000000),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("DAI"),
             token1: Token("WBTC"),
-            reserve0: 1_000_000.0,
-            reserve1: 50.0,
-            fee_bps: 30,
+            reserve0: dec!(1000000),
+            reserve1: dec!(50),
+            fee_bps: dec!(30),
         },
         Pool {
             token0: Token("ETH"),
             token1: Token("WBTC"),
-            reserve0: 1000.0,
-            reserve1: 50.0,
-            fee_bps: 30,
+            reserve0: dec!(1000),
+            reserve1: dec!(50),
+            fee_bps: dec!(30),
         },
     ];
 
@@ -49,15 +50,17 @@ fn test_direct_and_indirect_route() {
     let from = Token("ETH");
     let to = Token("WBTC");
     let params = ExecutionParams {
-        slippage: Slippage { tolerance_bps: 100 },
+        slippage: Slippage {
+            tolerance_bps: dec!(100),
+        },
         algo: RoutingAlgo::Auto,
         max_hops: 4,
     };
 
-    let route = router.compute_route(Side::Buy, &graph, &from, &to, 10.0, params);
+    let route = router.compute_route(Side::Buy, &graph, &from, &to, dec!(10), params);
     assert!(route.is_some());
     let (_algo, route) = route.unwrap();
-    assert!(route.output_amount > 0.0);
+    assert!(route.output_amount > dec!(0.0));
     assert!(route.steps.len() <= 3);
     println!("Best route: {:?}", route);
 }
@@ -67,13 +70,13 @@ fn test_slippage_enforced() {
     let (graph, _) = setup_graph();
     let from = Token("ETH");
     let to = Token("WBTC");
-    let input = 10.0;
-    let max_slippage = 0.01;
+    let input = dec!(10);
+    let max_slippage = dec!(0.01);
 
     let base_router = DefaultRouter;
     let params = ExecutionParams {
         slippage: Slippage {
-            tolerance_bps: (max_slippage * 10_000.0) as u32,
+            tolerance_bps: max_slippage * dec!(10000),
         },
         algo: RoutingAlgo::Dijkstra,
         max_hops: 4,
@@ -83,7 +86,7 @@ fn test_slippage_enforced() {
         base_router.compute_route(Side::Buy, &graph, &from, &to, input, params)
     {
         let effective_rate = route.output_amount / input;
-        let worst_case_rate = effective_rate * (1.0 - max_slippage);
+        let worst_case_rate = effective_rate * (dec!(1) - max_slippage);
         assert!(route.output_amount >= input * worst_case_rate);
     } else {
         panic!("No route found with slippage tolerance");

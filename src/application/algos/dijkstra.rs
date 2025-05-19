@@ -1,4 +1,5 @@
 use rayon::iter::ParallelIterator;
+use rust_decimal::Decimal;
 
 use crate::adapter::graph::Graph;
 use crate::domain::types::{ExecutionParams, Route, Side, SwapStep, Token};
@@ -10,7 +11,7 @@ use std::sync::Arc;
 struct DijkstraState {
     token: Token,
     route: Vec<SwapStep>,
-    cumulative_amount: f64,
+    cumulative_amount: Decimal,
 }
 
 impl PartialEq for DijkstraState {
@@ -26,7 +27,7 @@ impl PartialOrd for DijkstraState {
 }
 impl Ord for DijkstraState {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.cumulative_amount.total_cmp(&self.cumulative_amount)
+        other.cumulative_amount.cmp(&self.cumulative_amount)
     }
 }
 
@@ -47,7 +48,7 @@ pub fn dijkstra(
     graph: &Graph,
     from: &Token,
     to: &Token,
-    amount_in: f64,
+    amount_in: Decimal,
     params: ExecutionParams,
 ) -> Option<Route> {
     let mut heap = BinaryHeap::new();
@@ -57,7 +58,7 @@ pub fn dijkstra(
         cumulative_amount: amount_in,
     });
 
-    let mut visited: HashMap<Token, f64> = HashMap::new();
+    let mut visited: HashMap<Token, Decimal> = HashMap::new();
 
     while let Some(DijkstraState {
         token,

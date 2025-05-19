@@ -1,5 +1,6 @@
 use rayon::iter::IntoParallelIterator;
 use rayon::iter::ParallelIterator;
+use rust_decimal::Decimal;
 
 use crate::adapter::graph::Graph;
 use crate::application::algos::{
@@ -12,7 +13,7 @@ pub fn execute(
     graph: &Graph,
     from: &Token,
     to: &Token,
-    amount_in: f64,
+    amount_in: Decimal,
     exec_params: ExecutionParams,
 ) -> Option<(RoutingAlgo, Route)> {
     match exec_params.algo {
@@ -35,7 +36,7 @@ pub fn select_best_route(
     graph: &Graph,
     from: &Token,
     to: &Token,
-    amount_in: f64,
+    amount_in: Decimal,
     params: ExecutionParams,
 ) -> Option<(RoutingAlgo, Route)> {
     let candidates = [
@@ -64,5 +65,5 @@ pub fn select_best_route(
     candidates
         .into_par_iter()
         .filter_map(|(algo, opt)| opt.map(|r| (algo, r)))
-        .max_by(|a, b| a.1.output_amount.total_cmp(&b.1.output_amount))
+        .max_by(|a, b| a.1.output_amount.cmp(&b.1.output_amount))
 }

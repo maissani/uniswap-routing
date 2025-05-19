@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use rust_decimal::{Decimal, dec};
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Side {
     Buy,
@@ -13,9 +15,9 @@ pub struct Token(pub &'static str);
 pub struct Pool {
     pub token0: Token,
     pub token1: Token,
-    pub reserve0: f64,
-    pub reserve1: f64,
-    pub fee_bps: u32,
+    pub reserve0: Decimal,
+    pub reserve1: Decimal,
+    pub fee_bps: Decimal,
 }
 
 impl Pool {
@@ -23,8 +25,8 @@ impl Pool {
         (a == &self.token0 && b == &self.token1) || (a == &self.token1 && b == &self.token0)
     }
 
-    pub fn get_output_amount(&self, input_token: &Token, input_amount: f64) -> Option<f64> {
-        let fee_multiplier = 1.0 - (self.fee_bps as f64 / 10_000.0);
+    pub fn get_output_amount(&self, input_token: &Token, input_amount: Decimal) -> Option<Decimal> {
+        let fee_multiplier = dec!(1) - (self.fee_bps as Decimal / dec!(10000));
         let input_amount_with_fee = input_amount * fee_multiplier;
 
         let (reserve_in, reserve_out) = if input_token == &self.token0 {
@@ -60,17 +62,17 @@ pub struct SwapStep {
 #[derive(Debug, Clone)]
 pub struct Route {
     pub steps: Vec<SwapStep>,
-    pub output_amount: f64,
+    pub output_amount: Decimal,
 }
 
 #[derive(Debug, Clone, Copy)]
 pub struct FeeParams {
-    pub fee_bps: u32,
+    pub fee_bps: Decimal,
 }
 
 #[derive(Debug, Clone, Copy)]
 pub struct Slippage {
-    pub tolerance_bps: u32,
+    pub tolerance_bps: Decimal,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

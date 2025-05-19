@@ -1,4 +1,5 @@
 use rayon::iter::ParallelIterator;
+use rust_decimal::Decimal;
 
 use crate::adapter::graph::Graph;
 use crate::domain::types::{ExecutionParams, Route, Side, SwapStep, Token};
@@ -22,13 +23,13 @@ pub fn bfs(
     graph: &Graph,
     from: &Token,
     to: &Token,
-    amount_in: f64,
+    amount_in: Decimal,
     params: ExecutionParams,
 ) -> Option<Route> {
     let mut queue = VecDeque::new();
     queue.push_back((from.clone(), vec![], amount_in));
 
-    let mut visited: HashMap<Token, f64> = HashMap::new();
+    let mut visited: HashMap<Token, Decimal> = HashMap::new();
 
     while let Some((token, route, cumulative_amount)) = queue.pop_front() {
         if token == *to {
