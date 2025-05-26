@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Display, sync::Arc};
 
 use rust_decimal::{Decimal, dec};
 
@@ -65,6 +65,13 @@ pub struct Route {
     pub output_amount: Decimal,
 }
 
+impl Display for Token {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+    
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct FeeParams {
     pub fee_bps: Decimal,
@@ -91,3 +98,16 @@ pub struct ExecutionParams {
     pub slippage: Slippage,
     pub max_hops: usize,
 }
+
+
+#[derive(Debug, Clone)]
+pub enum ArbitrageType {
+    Circular,
+}
+
+#[derive(Debug, Clone)]
+pub struct Arbitrage {
+    pub arbitrage_type: ArbitrageType,
+    pub route: Route
+}
+

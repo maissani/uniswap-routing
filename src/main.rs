@@ -118,6 +118,7 @@ fn main() {
     ];
 
     for (side, from, to, input, slippage_bps) in scenarios {
+
         let slippage = Slippage {
             tolerance_bps: slippage_bps,
         };
@@ -127,6 +128,35 @@ fn main() {
             "\n=== Scenario: {} → {} | Input: {} | Slippage: {}bps | Algo: {:?} ===",
             from, to, input, slippage_bps, algo
         );
+
+        // Detect and print arbitrage opportunities (circular routes)
+        let circular_routes = uniswap_routing::application::algos::circular::circular(
+            side.clone(),
+            &graph,
+            &Token(from),
+            &Token(to), // not used, but required by signature
+            input,
+            ExecutionParams {
+            slippage,
+            algo,
+            max_hops: 4,
+            },
+        );
+
+        for route in circular_routes.iter() {
+            if route.output_amount > input {
+            println!(
+                "→ Arbitrage Type Circular: possible!  Meilleur Profit: Route: {} | Profit: {:.6}",
+                route
+                .steps
+                .iter()
+                .map(|step| format!("{}→{}", step.from.0, step.to.0))
+                .collect::<Vec<_>>()
+                .join(" -> "),
+                route.output_amount - input
+            );
+            }
+        }
 
         if let Some((algo, r)) = router.compute_route(
             side.clone(),
